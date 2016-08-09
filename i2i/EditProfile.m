@@ -509,10 +509,10 @@ inscriptsAppDelegate *appDelegates;
 
 - (void)requestFinishedUploadVideo:(ASIHTTPRequest *)requestUpload
 {
-    NSLog(@"Responce >>> %@",requestUpload);
+    //NSLog(@"Responce >>> %@",requestUpload);
     [appDelegates hideLoadingView];
     
-    NSLog(@"callfun");
+   //NSLog(@"callfun");
     NSError *error = [requestUpload error];
     if (!error)
     {
