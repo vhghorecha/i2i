@@ -1,9 +1,9 @@
 //
 //  AsyncImage.m
-//  Amaxing
+//  Okoboji
 //
-//  Created by NCrypted on 2/5/15.
-//  Copyright (c) 2015 Ncrypted. All rights reserved.
+//  Created by Ritesh on 28/08/14.
+//  Copyright (c) 2014 LI018. All rights reserved.
 //
 
 #import "AsyncImage.h"
@@ -15,7 +15,7 @@
 @synthesize onAsyncTouchSelector;
 @synthesize indexPath;
 
-inscriptsAppDelegate *appDelegateAsy;
+inscriptsAppDelegate *appDelegate;
 
 -(id)initWithCoder:(NSCoder *)aDecoder
 {
@@ -46,39 +46,29 @@ inscriptsAppDelegate *appDelegateAsy;
     
     [self setUserInteractionEnabled:YES];
     [self setMultipleTouchEnabled:YES];
-    
+}
+
+-(void)addGestureRecognizer
+{
     UITapGestureRecognizer *singleFingerDTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap:)];
     [self addGestureRecognizer:singleFingerDTap];
+    
 }
 -(void) handleSingleTap:(id)sender
 {
-    [delegate onAsyncTouch:indexPath];
+    if([delegate respondsToSelector:onAsyncTouchSelector])
+        [delegate performSelector:onAsyncTouchSelector withObject:self];
 }
-- (void)loadImageFromStringforUserimg:(NSString*)stringUrl
-{    
+
+- (void)loadImageFromString:(NSString*)stringUrl
+{
     [self cancelConnection];
-    [scrollingWheel startAnimating];
+	[scrollingWheel startAnimating];
+    
     imgName = [[[stringUrl componentsSeparatedByString:@"/"] lastObject] retain];
     
-//    NSRange whiteSpaceRange = [imgName rangeOfCharacterFromSet:[NSCharacterSet whitespaceCharacterSet]];
-//    if (whiteSpaceRange.location != NSNotFound) {
-//
-//        stringUrl = [stringUrl stringByReplacingOccurrencesOfString:@" " withString: @"%20"];
-//        indexPath = stringUrl;
-//        [indexPath retain];
-//        strFolderName = @"Images";
-//        imagePath = [[[AppDelegate sharedAppDelegate] applicationCacheDirectory] stringByAppendingPathComponent:strFolderName];
-//        NSLog(@"imagePath: %@",imagePath);
-//        imagePath = [imagePath stringByAppendingPathComponent:imgName];
-//        
-//    }else{
-//       
-//    }
-    
-    indexPath = stringUrl;
-    [indexPath retain];
     strFolderName = @"Images";
-    imagePath = [[[inscriptsAppDelegate sharedAppDelegate] applicationCacheDirectory] stringByAppendingPathComponent:strFolderName];
+    NSString *imagePath = [[[inscriptsAppDelegate sharedAppDelegate] applicationCacheDirectory] stringByAppendingPathComponent:strFolderName];
     
     imagePath = [imagePath stringByAppendingPathComponent:imgName];
     
@@ -90,21 +80,21 @@ inscriptsAppDelegate *appDelegateAsy;
     {
         self.image = nil;
         UIImage *img = [[UIImage alloc]initWithContentsOfFile:imagePath];
-        
+
         /*
-         CGImageRef cgref = [img CGImage];
-         CIImage *cim = [img CIImage];
-         if (cim == nil && cgref == NULL){
-         NSError *error = nil;
-         [[NSFileManager defaultManager] removeItemAtPath: imagePath error:&error];
-         [self loadImageUrl:stringUrl];
-         }else{
-         [self setImage:img];
-         [scrollingWheel stopAnimating];
-         if ([delegate respondsToSelector:@selector(FetchImageSuccess:)]){
-         [delegate FetchImageSuccess:self];
-         }
-         }*/
+        CGImageRef cgref = [img CGImage];
+        CIImage *cim = [img CIImage];
+        if (cim == nil && cgref == NULL){
+            NSError *error = nil;
+            [[NSFileManager defaultManager] removeItemAtPath: imagePath error:&error];
+            [self loadImageUrl:stringUrl];
+        }else{
+            [self setImage:img];
+            [scrollingWheel stopAnimating];
+            if ([delegate respondsToSelector:@selector(FetchImageSuccess:)]){
+                [delegate FetchImageSuccess:self];
+            }
+        }*/
         
         [self setImage:img];
         [scrollingWheel stopAnimating];
@@ -126,16 +116,16 @@ inscriptsAppDelegate *appDelegateAsy;
 - (void)loadImageUrl:(NSString*)url
 {
     self.image = nil;
-    if (connection!=nil) {
-        
+	if (connection!=nil) {
+		
         [connection cancel];
         [connection release];
-        connection = nil;
-    }
-    if (data!=nil) {
-        [data release];
-        data = nil;
-    }
+		connection = nil;
+	}
+	if (data!=nil) {
+		[data release];
+		data = nil;
+	}
     if (imgName2!=nil)
     {
         [imgName2 release];
@@ -150,14 +140,14 @@ inscriptsAppDelegate *appDelegateAsy;
     if ([fileManager fileExistsAtPath:imagePath]==NO)
     {
         NSURLRequest* request = [NSURLRequest requestWithURL:[NSURL URLWithString:url] cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:120.0];
-        connection = [[NSURLConnection alloc] initWithRequest:request delegate:self];
+		connection = [[NSURLConnection alloc] initWithRequest:request delegate:self];
     }
 }
 
 -(void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
 {
     [data release];
-    data=nil;
+	data=nil;
     [scrollingWheel stopAnimating];
     if(delegate)
     {
@@ -175,7 +165,7 @@ inscriptsAppDelegate *appDelegateAsy;
         [data release];
         data = nil;
     }
-    data = [[NSMutableData data] retain];
+	data = [[NSMutableData data] retain];
 }
 
 -(void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)dataObj
@@ -184,7 +174,7 @@ inscriptsAppDelegate *appDelegateAsy;
     {
         data = [[NSMutableData data] retain];
     }
-    [data appendData:dataObj];
+	[data appendData:dataObj];
 }
 
 - (void) connectionDidFinishLoading:(NSURLConnection *)theConnection
@@ -197,11 +187,11 @@ inscriptsAppDelegate *appDelegateAsy;
     if (cim == nil && cgref == NULL)
     {
         /*
-         [data release];
-         data=nil;
-         [self loadImageFromStringforUserimg:[NSString stringWithFormat:@"%@",[connection.currentRequest URL]]];
-         [connection release];
-         connection=nil;
+        [data release];
+        data=nil;
+        [self loadImageFromStringforUserimg:[NSString stringWithFormat:@"%@",[connection.currentRequest URL]]];
+        [connection release];
+        connection=nil;
          */
         
     }
@@ -247,7 +237,7 @@ inscriptsAppDelegate *appDelegateAsy;
 
 - (void)dealloc
 {
-    [scrollingWheel release];
+	[scrollingWheel release];
     [super dealloc];
 }
 
@@ -261,7 +251,16 @@ inscriptsAppDelegate *appDelegateAsy;
         [data release];
         data=nil;
     }
-    [scrollingWheel stopAnimating];
+	[scrollingWheel stopAnimating];
 }
+
+/*
+// Only override drawRect: if you perform custom drawing.
+// An empty implementation adversely affects performance during animation.
+- (void)drawRect:(CGRect)rect
+{
+    // Drawing code
+}
+*/
 
 @end

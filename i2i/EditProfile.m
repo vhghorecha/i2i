@@ -26,6 +26,8 @@
 @synthesize viewUser;
 @synthesize viewStatues;
 
+@synthesize moviePlayer;
+
 //UITextField
 @synthesize txtUserName;
 @synthesize txtStatus;
@@ -46,6 +48,12 @@ inscriptsAppDelegate *appDelegates;
     // Do any additional setup after loading the view.
     
     appDelegates = [inscriptsAppDelegate sharedAppDelegate];
+    
+    UIButton *btnBack = [UIButton buttonWithType:UIButtonTypeCustom];
+    btnBack.frame=CGRectMake(0, 0, 35, 35);
+    [btnBack setImage:[UIImage imageNamed:@"backArrow"] forState:UIControlStateNormal];
+    [btnBack addTarget:self action:@selector(onClickBack) forControlEvents:UIControlEventTouchUpInside];
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc]initWithCustomView:btnBack];
     
     [objImageCollection registerNib:[UINib nibWithNibName:@"ImageCell" bundle:nil] forCellWithReuseIdentifier:@"cell"];
     [objVideoCollection registerNib:[UINib nibWithNibName:@"ImageCell" bundle:nil] forCellWithReuseIdentifier:@"cell"];
@@ -81,6 +89,9 @@ inscriptsAppDelegate *appDelegates;
     
     [self checkAPI:userID];
     
+}
+-(void)onClickBack{
+    [self.navigationController popViewControllerAnimated:YES];
 }
 
 -(void)viewDidAppear:(BOOL)animated
@@ -455,7 +466,7 @@ inscriptsAppDelegate *appDelegates;
     
     [appDelegates showLoadingView];
     
-    NSURL *strUrl = [NSURL URLWithString:[NSString stringWithFormat:@"%@action=addvideo",API_URL]];
+    NSURL *strUrl = [NSURL URLWithString:[NSString stringWithFormat:@"%@?action=addvideo",API_URL]];
     
     upImgRequest = [[ASIFormDataRequest alloc] initWithURL:strUrl];
     [upImgRequest setRequestMethod:@"POST"];
@@ -500,6 +511,23 @@ inscriptsAppDelegate *appDelegates;
 {
     NSLog(@"Responce >>> %@",requestUpload);
     [appDelegates hideLoadingView];
+    
+    NSLog(@"callfun");
+    NSError *error = [requestUpload error];
+    if (!error)
+    {
+        NSString *response = [requestUpload responseString];
+        NSData* data = [response dataUsingEncoding:NSUTF8StringEncoding];
+        NSMutableDictionary  *dict = (NSMutableDictionary *)[NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:nil];
+        if(dict){
+            NSLog(@"DICT12 %@", dict);
+        }else{
+            NSLog(@"DIC123T %@", dict);
+        }
+    }
+    
+    NSString *userID =[[NSUserDefaults standardUserDefaults]objectForKey:LOGGED_IN_USER];
+    [self checkAPI:userID];
 }
 - (void)requestFailedUploadVideo:(ASIHTTPRequest *)request1
 {
@@ -640,6 +668,67 @@ inscriptsAppDelegate *appDelegates;
     }
 }
 
+-(void)playVideoAtIndex:(int)index andVideo:(NSString*)strVideoLink
+{
+    NSURL *url = [NSURL URLWithString:strVideoLink];
+    moviePlayer =  [[MPMoviePlayerController alloc]
+                    initWithContentURL:url];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(moviePlayBackDidFinish:)
+                                                 name:MPMoviePlayerPlaybackDidFinishNotification
+                                               object:moviePlayer];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(doneButtonClick:)
+                                                 name:MPMoviePlayerWillExitFullscreenNotification
+                                               object:nil];
+    moviePlayer.controlStyle = MPMovieControlStyleDefault;
+    moviePlayer.shouldAutoplay = YES;
+    [self.view addSubview:moviePlayer.view];
+    [moviePlayer setFullscreen:YES animated:YES];
+}
+
+- (void) moviePlayBackDidFinish:(NSNotification*)notification {
+    MPMoviePlayerController *player = [notification object];
+    [[NSNotificationCenter defaultCenter]
+     removeObserver:self
+     name:MPMoviePlayerPlaybackDidFinishNotification
+     object:player];
+    
+    if ([player
+         respondsToSelector:@selector(setFullscreen:animated:)])
+    {
+        [player.view removeFromSuperview];
+    }
+}
+
+-(void)doneButtonClick:(NSNotification*)aNotification{
+    
+    NSString *userID =[[NSUserDefaults standardUserDefaults]objectForKey:LOGGED_IN_USER];
+    
+    [self checkAPI:userID];
+}
+
+-(void)showImageAtIndex:(int)index andImage:(NSString *)strImageLink
+{
+//    [arrImage objectAtIndex:index];
+    
+    NSMutableArray *ArrData =[[NSMutableArray alloc]init];
+    MyPhoto *photo = [[MyPhoto alloc] initWithImageURL:[NSURL URLWithString:strImageLink] name:@""];
+    [ArrData addObject:photo];
+    
+    MyPhotoSource *source = [[MyPhotoSource alloc] initWithPhotos:ArrData];
+    
+    EGOPhotoViewController *photoController = [[EGOPhotoViewController alloc] initWithPhotoSource:source];
+    UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:photoController];
+    
+    navController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+    navController.modalPresentationStyle = UIModalPresentationFullScreen;
+    
+    [self.navigationController presentViewController:navController animated:YES completion:nil];
+}
+
 -(void)deleteImageWithImageId:(NSString *)imgId userId:(NSString *)userId
 {
     /*
@@ -707,39 +796,47 @@ inscriptsAppDelegate *appDelegates;
 
 -(IBAction)onClickNextImage:(id)sender
 {
-    if([arrImage count]-1 > imageIndex){
-        imageIndex++;
-        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:imageIndex inSection:0];
-        [objImageCollection scrollToItemAtIndexPath:indexPath
-                                   atScrollPosition:UICollectionViewScrollPositionNone
-                                           animated:YES];
+    if([arrImage count] > 0){
+        if([arrImage count]-1 > imageIndex){
+            imageIndex++;
+            NSIndexPath *indexPath = [NSIndexPath indexPathForRow:imageIndex inSection:0];
+            [objImageCollection scrollToItemAtIndexPath:indexPath
+                                       atScrollPosition:UICollectionViewScrollPositionNone
+                                               animated:YES];
+        }
     }
     
 }
 -(IBAction)onClickPreviousImage:(id)sender
 {
-    if(imageIndex > 0){
-        imageIndex --;
-        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:imageIndex inSection:0];
-        [objImageCollection scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionNone animated:YES];
+    if([arrImage count] > 0){
+        if(imageIndex > 0){
+            imageIndex --;
+            NSIndexPath *indexPath = [NSIndexPath indexPathForRow:imageIndex inSection:0];
+            [objImageCollection scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionNone animated:YES];
+        }
     }
 }
 
 -(IBAction)onClickNextVideo:(id)sender
 {
-    if([arrVideo count]-1 > videoIndex){
-        videoIndex++;
-        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:videoIndex inSection:0];
-        [objVideoCollection scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionNone animated:YES];
+    if([arrVideo count] > 0){
+        if([arrVideo count]-1 > videoIndex){
+            videoIndex++;
+            NSIndexPath *indexPath = [NSIndexPath indexPathForRow:videoIndex inSection:0];
+            [objVideoCollection scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionNone animated:YES];
+        }
     }
 }
 
 -(IBAction)onClickPreviusVideo:(id)sender
 {
-    if(videoIndex > 0){
-        videoIndex --;
-        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:videoIndex inSection:0];
-        [objVideoCollection scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionNone animated:YES];
+    if([arrVideo count] > 0){
+        if(videoIndex > 0){
+            videoIndex --;
+            NSIndexPath *indexPath = [NSIndexPath indexPathForRow:videoIndex inSection:0];
+            [objVideoCollection scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionNone animated:YES];
+        }
     }
 
 }

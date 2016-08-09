@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="10117" systemVersion="15D21" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="10116" systemVersion="15D21" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
@@ -17,9 +17,13 @@
                         <rect key="frame" x="0.0" y="0.0" width="280" height="100"/>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                     </view>
-                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="yhr-Ey-7Rz" customClass="AsyncImage">
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="yhr-Ey-7Rz" customClass="UIImageView">
                         <rect key="frame" x="3" y="3" width="274" height="94"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="274" id="60N-y2-9Bo"/>
+                            <constraint firstAttribute="height" constant="94" id="Q2n-vD-osn"/>
+                        </constraints>
                     </view>
                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="s22-Kt-XA5">
                         <rect key="frame" x="250" y="-9" width="38" height="41"/>
@@ -50,7 +54,7 @@
             <size key="customSize" width="285" height="139"/>
             <connections>
                 <outlet property="btnClose" destination="s22-Kt-XA5" id="kNx-Lp-cEJ"/>
-                <outlet property="imgCollection" destination="yhr-Ey-7Rz" id="j5b-Ej-9Vv"/>
+                <outlet property="imgCollection" destination="yhr-Ey-7Rz" id="Xv0-wk-VVM"/>
                 <outlet property="viewBack" destination="Eak-9H-fq6" id="gLP-HD-et7"/>
             </connections>
             <point key="canvasLocation" x="812" y="505"/>

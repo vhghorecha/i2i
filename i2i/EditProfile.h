@@ -15,6 +15,9 @@
 #import "ImageCell.h"
 #import "AsyncImage.h"
 #import "inscriptsAppDelegate.h"
+#import "EGOPhotoViewController.h"
+#import "MyPhotoSource.h"
+#import "MyPhoto.h"
 
 @interface EditProfile : UIViewController<UIActionSheetDelegate,UIImagePickerControllerDelegate,UINavigationControllerDelegate,UICollectionViewDataSource, UICollectionViewDelegate,HttpWrapperDelegate , ImageCellDelegate>
 {
@@ -36,6 +39,9 @@
 //UIView
 @property (nonatomic , strong) IBOutlet UIView *viewUser;
 @property (nonatomic , strong) IBOutlet UIView *viewStatues;
+
+//MPMovie Player
+@property (strong, nonatomic) MPMoviePlayerController *moviePlayer;
 
 //UITextField
 @property (nonatomic , strong) IBOutlet UITextField *txtUserName;

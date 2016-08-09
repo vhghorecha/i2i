@@ -13,7 +13,8 @@
 
 -(void)removeImageAtIndex:(int)index;
 -(void)removeVideoAtIndex:(int)index;
-
+-(void)playVideoAtIndex:(int)index andVideo:(NSString *)strVideoLink;
+-(void)showImageAtIndex:(int)index andImage:(NSString *)strImageLink;
 @end
 
 @interface ImageCell : UICollectionViewCell
@@ -30,6 +31,8 @@
 @property (strong ,  nonatomic)id<ImageCellDelegate> delegate;
 
 @property (nonatomic , strong) IBOutlet AsyncImage *imgCollection;
+@property (nonnull , strong) NSString *strLinkVideo;
+@property (nonnull , strong) NSString *strLinkImage;
 
 -(void)setImageDict:(NSDictionary *)dict;
 -(void)setVidDict:(NSDictionary *)dict;

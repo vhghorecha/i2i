@@ -16,18 +16,21 @@
     return (inscriptsAppDelegate *)[[UIApplication sharedApplication] delegate];
 }
 
--(NSString *)applicationCacheDirectory
-{
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
-    NSString *basePath = ([paths count] > 0) ? [paths objectAtIndex:0] : nil;
-    return basePath;
-}
-
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     // Override point for customization after application launch.
     /* Push notification Registration */
     [PushNotification registerParse];
+    
+    // Create Dir for save Images
+    NSString *filePath = [[self applicationCacheDirectory] stringByAppendingPathComponent:@"Images"];
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSLog(@"FilePath %@",filePath);
+    
+    if(![fileManager fileExistsAtPath:filePath]) {
+        [fileManager createDirectoryAtPath:filePath withIntermediateDirectories:NO attributes:nil error:nil];
+    }
+
     
     if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 8.0)
     {
@@ -42,7 +45,13 @@
     
     return YES;
 }
-							
+
+-(NSString *)applicationCacheDirectory
+{
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+    NSString *basePath = ([paths count] > 0) ? [paths objectAtIndex:0] : nil;
+    return basePath;
+}
 - (void)applicationWillResignActive:(UIApplication *)application
 {
     // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
