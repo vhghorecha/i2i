@@ -230,7 +230,7 @@
     
     UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:nil destructiveButtonTitle:nil otherButtonTitles:nil];
     
-    for (NSString *option in @[@"Unblock User",@"Broadcast Message",@"Create User",@"Remove User"]) {
+    for (NSString *option in @[@"Unblock User",@"Broadcast Message"]) {
         [actionSheet addButtonWithTitle:option];
     }
       // Also add a cancel button

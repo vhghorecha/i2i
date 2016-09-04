@@ -62,7 +62,7 @@
     
     moreButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ic_custom_menu"] style:UIBarButtonItemStylePlain target:self action:@selector(showOptions)];
     [moreButton setStyle:UIBarButtonItemStylePlain];
-    self.navigationItem.rightBarButtonItems = @[moreButton];
+    //self.navigationItem.rightBarButtonItems = @[moreButton];
     
     //Settings for buttons
     for (UIButton *button in @[oneOnOneButton,chatroomButton,logButton,logoutButton]) {

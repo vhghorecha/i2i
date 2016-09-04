@@ -22,6 +22,15 @@
     /* Push notification Registration */
     [PushNotification registerParse];
     
+    /* Create Direcory */
+    NSString *catchDir  = [self applicationCacheDirectory];
+    NSString *dataPath = [catchDir stringByAppendingPathComponent:@"/i2i_Videos"];
+    NSLog(@"dataPath %@",dataPath);
+    
+    if (![[NSFileManager defaultManager] fileExistsAtPath:dataPath]){
+        [[NSFileManager defaultManager] createDirectoryAtPath:dataPath withIntermediateDirectories:NO attributes:nil error:nil];
+    }
+    
     // Create Dir for save Images
     NSString *filePath = [[self applicationCacheDirectory] stringByAppendingPathComponent:@"Images"];
     NSFileManager *fileManager = [NSFileManager defaultManager];
@@ -30,6 +39,7 @@
     if(![fileManager fileExistsAtPath:filePath]) {
         [fileManager createDirectoryAtPath:filePath withIntermediateDirectories:NO attributes:nil error:nil];
     }
+
 
     
     if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 8.0)

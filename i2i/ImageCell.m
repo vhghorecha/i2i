@@ -31,6 +31,7 @@
     imgCollection.userInteractionEnabled = YES;
     [singleTap addTarget:self action:@selector(playVideoOnMPMoviePlayer)];
     [imgCollection addGestureRecognizer:singleTap];
+    imgCollection.image = [UIImage imageNamed:@"btnPlaceHolder.png"];
 }
 
 -(void)setImageDict:(NSDictionary *)dict
@@ -68,7 +69,7 @@
             [imgCollection setImageWithURL:[NSURL URLWithString:imageName] placeholderImage:nil];
         }
     }
-    strLinkVideo = [NSString stringWithFormat:@"http://www.%@",imageName];
+    strLinkVideo = [NSString stringWithFormat:@"http://www.%@",[dict objectForKey:@"video_file"]];
 }
 
 -(IBAction)onClickClose:(id)sender

@@ -849,7 +849,7 @@
     
     UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:nil destructiveButtonTitle:nil otherButtonTitles:nil];
     
-    for (NSString *option in @[@"Send Image from Path",@"Send Image-Data",@"Capture Image",@"Capture Video",@"Share Photo From Photo Library",@"Share Video From Photo Library",@"Share Audio",@"Share File"]) {
+    for (NSString *option in @[@"Capture Image",@"Capture Video",@"Share Photo",@"Share Video",@"Share Audio",@"Share File"]) {
         [actionSheet addButtonWithTitle:option];
     }
     // Also add a cancel button
@@ -875,95 +875,6 @@
     switch (buttonIndex) {
         case 0: {
             
-            /* Here, you can also give the path of image file from Document's Directory. */
-            [cometChatChatroom sendImageWithPath:[[NSBundle mainBundle] pathForResource:@"testImage" ofType:@"jpg"] success:^(NSDictionary *response) {
-                NSLog(@"SDK Log : Send Image from URL Response = %@",response);
-                
-                [NativeKeys getLogOType:LOG_TYPE_CHATROOM ForMessage:@"sendImage success"];
-                [[NSNotificationCenter defaultCenter] postNotificationName:@"com.sdkdemo.logsview.refreshLogs" object:nil];
-                
-                NSString *duplicateMsgIdCheck = [response objectForKey:ID];
-                
-                
-                for(id msgDic in messageArray){
-                    
-                    if([[NSString stringWithFormat:@"%@",[msgDic objectForKey:ID]] isEqualToString:[NSString stringWithFormat:@"%@",duplicateMsgIdCheck]]){
-                        
-                        duplicateMsgIdCheck = nil;
-                        return;
-                    }
-                }
-                
-                duplicateMsgIdCheck = nil;
-                
-                /* Get message id and message from response and form message dictionary as follows */
-                NSMutableDictionary *tempDictionary = [NSMutableDictionary dictionaryWithObjectsAndKeys:@"Me",FROM,[response objectForKey:ID],ID,[response objectForKey:MESSAGE],MESSAGE,@"1",OLD,@0,TYPE,[NSString stringWithFormat:@"%@",[[NSUserDefaults standardUserDefaults] objectForKey:LOGGED_IN_USER]],@"fromid",MESSAGE_TYPE_IMAGE,MESSAGE_TYPE_KEY,nil];
-                
-                long long currentTime = (long long)([[NSDate date] timeIntervalSince1970]*1000);
-                [tempDictionary setObject:[NSString stringWithFormat:@"%lld",currentTime] forKey:SENT];
-                
-                /* Add this messageDic into messageArray and reload table */
-//                [messageArray addObject:tempDictionary];
-//                [chatTable reloadData];
-//                NSIndexPath *indexPath = [NSIndexPath indexPathForRow:[messageArray count]-1 inSection:0];
-//                [chatTable scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionBottom animated:NO];
-
-                [[DBManager getSharedInstance] insertChatRoomMessages:[NSMutableArray arrayWithObjects:tempDictionary, nil] forChatRoom:[[NSUserDefaults standardUserDefaults] objectForKey:CURRENT_CHATROOM_ID]];
-                
-                [[DBManager getSharedInstance] getChatRoomMessagesForChatRoom:currentRoomID updateFlag:0];
-                
-            } failure:^(NSError *error) {
-                NSLog(@"SDK Log : Send Image from URL Error = %@",error);
-            }];
-        }
-            break;
-        case 1: {
-            
-            /* Here you can also give imageData from UIImageViewController. */
-            [cometChatChatroom sendImageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:@"https://s3.amazonaws.com/uifaces/faces/twitter/sillyleo/48.jpg"]] success:^(NSDictionary *response) {
-                NSLog(@"SDK Log : Send ImageData Response = %@",response);
-                
-                [NativeKeys getLogOType:LOG_TYPE_CHATROOM ForMessage:@"sendImage success"];
-                [[NSNotificationCenter defaultCenter] postNotificationName:@"com.sdkdemo.logsview.refreshLogs" object:nil];
-                
-                NSString *duplicateMsgIdCheck = [response objectForKey:ID];
-                
-                
-                for(id msgDic in messageArray){
-                    
-                    if([[NSString stringWithFormat:@"%@",[msgDic objectForKey:ID]] isEqualToString:[NSString stringWithFormat:@"%@",duplicateMsgIdCheck]]){
-                        
-                        duplicateMsgIdCheck = nil;
-                        return;
-                    }
-                }
-                
-                duplicateMsgIdCheck = nil;
-                
-                /* Get message id and message from response and form message dictionary as follows */
-                NSMutableDictionary *tempDictionary = [NSMutableDictionary dictionaryWithObjectsAndKeys:@"Me",FROM,[response objectForKey:ID],ID,[response objectForKey:MESSAGE],MESSAGE,@"1",OLD,@0,TYPE,[NSString stringWithFormat:@"%@",[[NSUserDefaults standardUserDefaults] objectForKey:LOGGED_IN_USER]],@"fromid",MESSAGE_TYPE_IMAGE,MESSAGE_TYPE_KEY,nil];
-                
-                long long currentTime = (long long)([[NSDate date] timeIntervalSince1970]*1000);
-                [tempDictionary setObject:[NSString stringWithFormat:@"%lld",currentTime] forKey:SENT];
-                
-                /* Add this messageDic into messageArray and reload table */
-//                [messageArray addObject:tempDictionary];
-//                [chatTable reloadData];
-//                NSIndexPath *indexPath = [NSIndexPath indexPathForRow:[messageArray count]-1 inSection:0];
-//                [chatTable scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionBottom animated:NO];
-
-                //[[DBManager getSharedInstance] insertChatRoomMessages:[NSMutableArray arrayWithObjects:tempDictionary, nil] forChatRoom:[[NSUserDefaults standardUserDefaults] objectForKey:CURRENT_CHATROOM_ID]];
-                
-                //[[DBManager getSharedInstance] getChatRoomMessagesForChatRoom:currentRoomID updateFlag:0];
-                
-            } failure:^(NSError *error) {
-                NSLog(@"SDK Log : Send ImageData Error = %@",error);
-            }];
-            
-            break;
-        }
-        case 2: {
-            
             cameraUI.allowsEditing = YES;
             
             if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera] == NO) {
@@ -987,7 +898,7 @@
             
             break;
         }
-        case 3: {
+        case 1: {
             
             cameraUI.allowsEditing = NO;
             cameraUI.mediaTypes = [NSArray arrayWithObject:@"public.movie"];
@@ -1017,7 +928,7 @@
             
             break;
         }
-        case 4: {
+        case 2: {
             
             cameraUI.allowsEditing = YES;
             cameraUI.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
@@ -1027,7 +938,7 @@
             
             break;
         }
-        case 5: {
+        case 3: {
             
             cameraUI.allowsEditing = NO;
             cameraUI.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
@@ -1039,7 +950,7 @@
             
             break;
         }
-        case 6: {
+        case 4: {
             
             /* Here, you can also give the path of image file from Document's Directory. */
             [cometChatChatroom sendAudioWithPath:[[NSBundle mainBundle] pathForResource:@"sample" ofType:@"mp3"] success:^(NSDictionary *response) {
@@ -1054,7 +965,7 @@
             }];
         }
         break;
-        case 7: {
+        case 5: {
             
             /* Here, you can also give the path of image file from Document's Directory. */
             [cometChatChatroom sendFileWithPath:[[NSBundle mainBundle] pathForResource:@"samplefile" ofType:@"txt"] success:^(NSDictionary *response) {

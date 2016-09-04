@@ -15,6 +15,7 @@
 #define USER_KEYS @"b88fd407ee8cdb4af8221489fce05a20"
 #define SITE_URL @"http://i2iapp.com/ichat/"
 #define API_URL SITE_URL @"api/index.php"
+#define BASE_URL @"http://i2iapp.com/ichat/api/index.php"
 
 @interface inscriptsAppDelegate : UIResponder <UIApplicationDelegate>
 

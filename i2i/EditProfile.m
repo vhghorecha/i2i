@@ -123,7 +123,9 @@ inscriptsAppDelegate *appDelegates;
     [dics setValue:usrId forKey:@"userid"];
     [dics setValue:USER_KEYS forKey:@"api-key"];
     NSLog(@"%@", dics);
-    [httpGetFeed requestWithMethod:@"POST" url:API_URL param:dics];
+    [httpGetFeed requestWithMethod:@"POST" url:BASE_URL param:dics];
+    NSLog(@"%@",API_URL);
+    NSLog(@"%@",BASE_URL);
 }
 - (void) HttpWrapper:(HttpWrapper *)wrapper fetchDataSuccess:(NSMutableDictionary *)dicsResponse
 {
@@ -402,7 +404,6 @@ inscriptsAppDelegate *appDelegates;
     [upImgRequest setDidFailSelector:@selector(uploadImageRequestFailed:)];
     [upImgRequest setShouldContinueWhenAppEntersBackground:YES];
     [upImgRequest setShowAccurateProgress:YES];
-    [upImgRequest setShouldContinueWhenAppEntersBackground:YES];
     [upImgRequest startAsynchronous];
 }
 
@@ -466,15 +467,13 @@ inscriptsAppDelegate *appDelegates;
     
     [appDelegates showLoadingView];
     
-    NSURL *strUrl = [NSURL URLWithString:[NSString stringWithFormat:@"%@?action=addvideo",API_URL]];
+    NSURL *strUrl = [NSURL URLWithString:[NSString stringWithFormat:@"%@?action=addvideo",BASE_URL]];
     
     upImgRequest = [[ASIFormDataRequest alloc] initWithURL:strUrl];
     [upImgRequest setRequestMethod:@"POST"];
     [upImgRequest setPostFormat:ASIMultipartFormDataPostFormat];
-    [upImgRequest setTimeOutSeconds:60000];
+    [upImgRequest setTimeOutSeconds:6000];
     
-    NSString *path = [[inscriptsAppDelegate sharedAppDelegate] applicationCacheDirectory];
-    path = [path stringByAppendingPathComponent:@"RecodedVideo.png"];
     
     NSFileManager *fileManager = [NSFileManager defaultManager];
     
@@ -482,13 +481,13 @@ inscriptsAppDelegate *appDelegates;
     {
         NSLog(@"123 %@",videoUrl);
         
-        [upImgRequest setFile:videoUrl
-            withFileName:@"1.mp4"
+        [upImgRequest addData:videoUrl
+            withFileName:@"uploadVideo.mp4"
           andContentType:@"video/mp4"
                   forKey:@"video"];
-        [upImgRequest setFile:path
-                 withFileName:@"thumb.png"
-               andContentType:@"image/jpeg"
+        [upImgRequest addData:imagePath
+                 withFileName:@"RecodedVideo.png"
+               andContentType:@"image/png"
                        forKey:@"thumb"];
     }
     
@@ -501,10 +500,11 @@ inscriptsAppDelegate *appDelegates;
     [upImgRequest setDelegate:self];
     [upImgRequest setDidFinishSelector:@selector(requestFinishedUploadVideo:)];
     [upImgRequest setDidFailSelector:@selector(requestFailedUploadVideo:)];
-    [upImgRequest setUploadProgressDelegate:self];
+    //[upImgRequest setUploadProgressDelegate:self];
     [upImgRequest setShowAccurateProgress:YES];
     [upImgRequest setShouldContinueWhenAppEntersBackground:YES];
     [upImgRequest startAsynchronous];
+    
 }
 
 - (void)requestFinishedUploadVideo:(ASIHTTPRequest *)requestUpload
@@ -671,6 +671,7 @@ inscriptsAppDelegate *appDelegates;
 -(void)playVideoAtIndex:(int)index andVideo:(NSString*)strVideoLink
 {
     NSURL *url = [NSURL URLWithString:strVideoLink];
+    //NSURL *url = [NSURL URLWithString:@"http://i2iapp.com/ichat/writable/images/uservideos/test.m3u8"];
     moviePlayer =  [[MPMoviePlayerController alloc]
                     initWithContentURL:url];
     
